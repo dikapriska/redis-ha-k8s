@@ -1,34 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-ha-cluster-sentinel-d1
+  name: redis-cluster-sentinel-d1
 spec:
-  replicas: 3
+  replicas: 4
   selector:
     matchLabels:
-      app: redis-ha-cluster-sentinel-lbl
+      app: redis-cluster-sentinel-lbl
   template:
     metadata:
-      name: redis-ha-cluster-sentinel-p1
+      name: redis-cluster-sentinel-p1
       labels:
-        app: redis-ha-cluster-sentinel-lbl
+        app: redis-cluster-sentinel-lbl
     spec:
-      # affinity:
-      #   podAntiAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #     - labelSelector:
-      #         matchExpressions:
-      #         - key: app
-      #           operator: In
-      #           values:
-      #           - redis-ha-cluster-sentinel-lbl
-      #       topologyKey: "kubernetes.io/hostname"
-
       restartPolicy: Always
 
       containers:
-      - name: redis-ha-cluster-sentinel-c1
-        image: redis-sentinel-ha-cluster:1.0
+      - name: redis-cluster-sentinel-c1
+        image: dikapriska/redis-ha-cluster:latest
 
         resources:
           requests:

@@ -4,10 +4,10 @@
 #    This script expects following environment variables to be set,
 #    1. SENTINEL: true if this is sentinel instance, else false.
 #    2. MASTER: true if this is master instance, this is helpful when starting the cluster for the first time.
-#    3. REDIS_HA_CLUSTER_SENTINEL_SERVICE_SERVICE_HOST: this is service name of sentinel, check the yaml.
-#    4. REDIS_HA_CLUSTER_SENTINEL_SERVICE_SERVICE_PORT: this is service port of sentinel.
-#    5. REDIS_HA_CLUSTER_STARTUP_REDIS_MASTER_SERVICE_SERVICE_HOST: this is master's service name, this is needed when sentinel starts for the first time.
-#    6. REDIS_HA_CLUSTER_STARTUP_REDIS_MASTER_SERVICE_SERVICE_PORT: this is master's port, is needed when sentinel starts for the first time.
+#    3. REDIS_CLUSTER_SENTINEL_SERVICE_SERVICE_HOST: this is service name of sentinel, check the yaml.
+#    4. REDIS_CLUSTER_SENTINEL_SERVICE_SERVICE_PORT: this is service port of sentinel.
+#    5. REDIS_CLUSTER_MASTER_SERVICE_SERVICE_HOST: this is master's service name, this is needed when sentinel starts for the first time.
+#    6. REDIS_CLUSTER_MASTER_SERVICE_SERVICE_PORT: this is master's port, is needed when sentinel starts for the first time.
 
 
 #  This method launches redis instance which assumes it self as master
@@ -31,13 +31,13 @@ function launchsentinel() {
 
   while true; do
     echo "Trying to connect to Sentinel Service"
-    master=$(redis-cli -h ${REDIS_HA_CLUSTER_SENTINEL_SERVICE_SERVICE_HOST} -p ${REDIS_HA_CLUSTER_SENTINEL_SERVICE_SERVICE_PORT} --csv SENTINEL get-master-addr-by-name mymaster | tr ',' ' ' | cut -d' ' -f1)
+    master=$(redis-cli -h ${REDIS_CLUSTER_SENTINEL_SERVICE_SERVICE_HOST} -p ${REDIS_CLUSTER_SENTINEL_SERVICE_SERVICE_PORT} --csv SENTINEL get-master-addr-by-name mymaster | tr ',' ' ' | cut -d' ' -f1)
     if [[ -n ${master} ]]; then
       echo "Connected to Sentinel Service and retrieved Redis Master IP as ${master}"
       master="${master//\"}"
     else
       echo "Unable to connect to Sentinel Service, probably because I am first Sentinel to start. I will try to find STARTUP_MASTER_IP from the redis service"
-      master=$(redis-cli -a ${REDIS_DEFAULT_PASSWORD} -h ${REDIS_HA_CLUSTER_STARTUP_REDIS_MASTER_SERVICE_SERVICE_HOST} -p ${REDIS_HA_CLUSTER_STARTUP_REDIS_MASTER_SERVICE_SERVICE_PORT} get STARTUP_MASTER_IP)
+      master=$(redis-cli -a ${REDIS_DEFAULT_PASSWORD} -h ${REDIS_CLUSTER_MASTER_SERVICE_SERVICE_HOST} -p ${REDIS_CLUSTER_MASTER_SERVICE_SERVICE_PORT} get STARTUP_MASTER_IP)
       if [[ -n ${master} ]]; then
         echo "Retrieved Redis Master IP as ${master}"
       else
@@ -73,7 +73,7 @@ function launchslave() {
 
   while true; do
     echo "Trying to retrieve the Master IP again, in case of failover master ip would have changed."
-    master=$(redis-cli -h ${REDIS_HA_CLUSTER_SENTINEL_SERVICE_SERVICE_HOST} -p ${REDIS_HA_CLUSTER_SENTINEL_SERVICE_SERVICE_PORT} --csv SENTINEL get-master-addr-by-name mymaster | tr ',' ' ' | cut -d' ' -f1)
+    master=$(redis-cli -h ${REDIS_CLUSTER_SENTINEL_SERVICE_SERVICE_HOST} -p ${REDIS_CLUSTER_SENTINEL_SERVICE_SERVICE_PORT} --csv SENTINEL get-master-addr-by-name mymaster | tr ',' ' ' | cut -d' ' -f1)
     if [[ -n ${master} ]]; then
       master="${master//\"}"
     else
@@ -104,7 +104,7 @@ function launchredis() {
   while true; do
     # I will check if sentinel is up or not by connecting to it.
     echo "Trying to connect to sentinel, to retireve master's ip"
-    master=$(redis-cli -h ${REDIS_HA_CLUSTER_SENTINEL_SERVICE_SERVICE_HOST} -p ${REDIS_HA_CLUSTER_SENTINEL_SERVICE_SERVICE_PORT} --csv SENTINEL get-master-addr-by-name mymaster | tr ',' ' ' | cut -d' ' -f1)
+    master=$(redis-cli -h ${REDIS_CLUSTER_SENTINEL_SERVICE_SERVICE_HOST} -p ${REDIS_CLUSTER_SENTINEL_SERVICE_SERVICE_PORT} --csv SENTINEL get-master-addr-by-name mymaster | tr ',' ' ' | cut -d' ' -f1)
 
     # Is this instance marked as MASTER, it will matter only when the cluster is starting up for first time.
     if [[ "${MASTER}" == "true" ]]; then

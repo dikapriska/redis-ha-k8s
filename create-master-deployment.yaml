@@ -1,29 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-ha-cluster-master-d1
+  name: redis-cluster-master-d1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis-ha-cluster-redis-master-lbl
+      app: redis-cluster-master-lbl
   template:
     metadata:
-      name: redis-ha-cluster-master-p1
+      name: redis-cluster-master-p1
       labels:
-        app: redis-ha-cluster-redis-master-lbl
+        app: redis-cluster-master-lbl
         master: "true"
     spec:
-      # affinity:
-      #   podAntiAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #     - labelSelector:
-      #         matchExpressions:
-      #         - key: slave
-      #           operator: In
-      #           values:
-      #           - "true"
-      #       topologyKey: "kubernetes.io/hostname"
       volumes:
         - hostPath:
             path: /mnt/redis-data
@@ -32,8 +22,8 @@ spec:
       restartPolicy: Always
 
       containers:
-      - name: redis-ha-cluster-redis-c1
-        image: redis-sentinel-ha-cluster:1.0
+      - name: redis-cluster-c1
+        image: dikapriska/redis-ha-cluster:latest
 
         resources:
           requests:
