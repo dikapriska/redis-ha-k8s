@@ -8,19 +8,19 @@ This can easily be used to deploy into a large scale kubernetes cluster.
 
 - Create directory /mnt/redis-data
 
-	$ mkdir /mnt/redis-data
+		$ mkdir /mnt/redis-data
 
 - Clone repository
 
-	$ git clone https://github.com/dikapriska/redis-ha-k8s.git redis-failover
+		$ git clone https://github.com/dikapriska/redis-ha-k8s.git redis-failover
 
 - Change to directory redis-failover
 
-	$ cd redis-failover
+		$ cd redis-failover
 
 - Execute command create.sh
 
-	$ ./create.sh
+		$ ./create.sh
 
 - Done.
 
