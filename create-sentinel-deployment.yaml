@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: redis-cluster-sentinel-d1
+  name: redis-cluster-sentinel
 spec:
+  serviceName: redis
   replicas: 4
   selector:
     matchLabels:

@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: redis-cluster-slave-d1
+  name: redis-cluster-slave
 spec:
+  serviceName: redis
   replicas: 3
   selector:
     matchLabels:
